@@ -176,5 +176,34 @@ module.exports = testCase({
 					var nextdt = ct._getNextDateFrom(nextDate);
 					assert.deepEqual(nextdt, nextDate);
 					assert.done();
+				},
+				'test < constraints day of month': function(assert) {
+					assert.expect(5);
+
+					var ltm = [1, 3, 5, 8, 10];
+					for (var i = 0; i < ltm.length; i++) {
+						(function(m) {
+							assert.throws(function() {
+								var ct = new cron.CronTime('0 0 0 33 ' + m + ' *');
+							});
+						})(ltm[i]);
+					}
+
+					assert.done();
+				},
+				'test next month selection': function(assert) {
+					assert.expect(1);
+					var date = new Date();
+					var dom = date.getDate() + 1;
+					var ct = new cron.CronTime('0 0 0 ' + dom + ' * *');
+
+					var saDate = ct.sendAt();
+
+					if (dom < date.getDate())
+						date.setMonth(date.getMonth()+1);
+
+					assert.equal(date.getMonth(), saDate.getMonth());
+
+					assert.done()
 				}
 });
